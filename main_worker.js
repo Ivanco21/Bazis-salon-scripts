@@ -2,6 +2,7 @@
 
 for (let j = 0; j < Model.Count; j++) {
     let tovarElement = Model[j];
+    tovarElement.TovarName = "1123";
     let tovarName = tovarElement.Name;
     let nmHaveSimvol = tovarName.indexOf("$$$");
     if(nmHaveSimvol != -1){

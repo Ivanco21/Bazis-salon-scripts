@@ -1,242 +1,136 @@
 ﻿// jshint esversion:6
-let startTovarName = TovarItems.TovarName;
-let isNameChanged = startTovarName.indexOf("$$$");
+/**
+ * Set Tovar values to name after change.
+ * Start values write to UserProperty
+ */
 
-// set props to name 
-if (isNameChanged == -1) {
-    TovarItems.TovarName =
-        TovarItems.TovarName + "$$$" +
-        Math.round(TovarItems.TovarModel.GSize.x) + "_" +
-        Math.round(TovarItems.TovarModel.GSize.y) + "_" +
-        Math.round(TovarItems.TovarModel.GSize.z);
+let bl = TovarItems.TovarModel;
+let startPropsName = "startValues";
+let isSetStartProp = bl.UserProperty[startPropsName];
+
+// set start props
+if (isSetStartProp ==  undefined) {
+    bl.UserPropertyName = startPropsName;
+    let panelAndFurnCounter = getPanelAndFurnCount();
+    // start name$x$y$x$all detail cont
+    bl.UserProperty[startPropsName] =
+        TovarItems.TovarName + "$" +
+        Math.round(TovarItems.TovarModel.GSize.x).toFixed() + "$" +
+        Math.round(TovarItems.TovarModel.GSize.y).toFixed() + "$" +
+        Math.round(TovarItems.TovarModel.GSize.z).toFixed() + "$" +
+        panelAndFurnCounter;
+    //alert(bl.UserProperty[startPropsName]);
 }
+//check props and set name
 else{
-    let str = "str";
-    setUserPropsToBlock(TovarItems.TovarModel,str,"12345");
-    alert(TovarItems.TovarModel.UserProperty[str]);
-    let pnAndFurn = [];
-    pnAndFurn = getAllPanelAndFurnFromObjectsTopLvl(TovarItems.TovarModel);
-    let pn = pnAndFurn[0];
-    let furn = pnAndFurn[1];
-    alert( pn.length );
-    alert( furn.length );
+    let startProps = Object.create(null);
+    startProps = getStartProps(bl,startPropsName);
+    let newProps = Object.create(null);
+    newProps = getNewProps(bl);
+    setName(startProps,newProps,startProps.nameInit);
+}
+/**
+ * 
+ * 
+ */
+
+function getPanelAndFurnCount() {
+    let mainCnt = 0;
+    for (let j = 0; j < TovarItems.Count; j++) {
+        let oneItem = TovarItems.Items[j];
+        for (let i_d = 0; i_d < oneItem.ObjList.Count; i_d++) {
+            let oneDetail = oneItem.ObjList.Items[i_d];
+            let cnt = getAllPanelAndFurnFromObjectsTopLvl(oneDetail);
+            mainCnt = mainCnt + cnt;
+        }
+    }
+    return mainCnt;
 }
 
-// устанавливает свойства у блоков
-function setUserPropsToBlock(block, prop,propVl){
-    
-    let bl = block;
-    bl.UserPropertyName = prop;
-
-    bl.UserProperty[prop] = propVl;
-}
-
-
-// все панели и фурнитура из одинаковых элементов или элемента  TopLvl
+// all simple elements
 function getAllPanelAndFurnFromObjectsTopLvl(objectsTopLvl) {
 
-    var allPanelAndAllFurn = [];
+    let cnt = 0;
 
-    var allPanel = [];
-    var allFurn = [];
-
-    var oneObjTop;
-    if (objectsTopLvl instanceof TFurnBlock) {
-        alert("TFurnBlock");
-        oneObjTop = objectsTopLvl;
-        rec(oneObjTop);
-    }
-    else {
-
-        for (var i = 0; i < objectsTopLvl.length; i++) {
-            oneObjTop = objectsTopLvl[i];
-            rec(oneObjTop);
-        }
-    }
-
+    rec(objectsTopLvl);
 
     function rec(oneObjTop) {
-        for (var i = 0; i < oneObjTop.Count; i++) {
-            var obj = oneObjTop[i];
-            alert(oneObjTop.Count);
-            if (obj.List) {
+        for (let i = 0; i < oneObjTop.Count; i++) {
+            let obj = oneObjTop[i];
+            if (obj instanceof TFurnBlock) {
                 rec(obj);
             }
+            if (obj instanceof TFurnPanel) {
+                //alert("add panel");
+                cnt++;
+            }
             else {
-                if (obj instanceof TFurnPanel) {
-                    alert("panel");
-                    allPanel.push(obj);
-                }
-                else {
-                    allFurn.push(obj);
-                }
+                //alert("add furn");
+                cnt++;
             }
         }
     }
-
-    allPanelAndAllFurn.push(allPanel);
-    allPanelAndAllFurn.push(allFurn);
-    alert( allPanel.length);
-    return allPanelAndAllFurn;
+    return cnt;
 }
 
 
+function getStartProps (bl,startPropsName){
+    let startProps = Object.create(null);
+    let stringProps = bl.UserProperty[startPropsName];
 
-// // jshint esversion:6
-// let startTovarName = TovarItems.TovarName;
-// let isNameChanged = startTovarName.indexOf("$$$");
-
-// // set props to name 
-// if (isNameChanged == -1) {
-//     TovarItems.TovarName =
-//         TovarItems.TovarName + "$$$" +
-//         Math.round(TovarItems.TovarModel.GSize.x) + "_" +
-//         Math.round(TovarItems.TovarModel.GSize.y) + "_" +
-//         Math.round(TovarItems.TovarModel.GSize.z);
-// }
-// else{
-//     let str = "str";
-//     setUserPropsToBlock(TovarItems.TovarModel,str,"12345");
-//     alert(TovarItems.TovarModel.UserProperty[str]);
-// }
-
-// // устанавливает свойства у блоков
-// function setUserPropsToBlock(block, prop,propVl){
-    
-//     let bl = block;
-//     bl.UserPropertyName = prop;
-
-//     bl.UserProperty[prop] = propVl;
-// }
-
-
-
-
-
-
-// else {
-//     let finishElemnt = FindByName("Измененные изделия");
-//     // check all tovar elements and count price 
-//     if (finishElemnt != undefined) {
-//         alert("check all tovar elements and count price ");
-//     }
-//     alert("DON T HAVE FINISH ELEMENT");
-// }
-
-
-
-// start values 
-var artInit;
-var nmInit;
-
-var widthInit;
-var heightInit;
-var depthInit;
-var detailCntInit;
-var holeCntInit;
-var furnCntInit;
-
-
-
-// new values from model 
-var widthNew;
-var heightNew;
-var depthNew;
-var detailCntNew;
-var holeCntNew;
-var furnCntNew;
-
-
-/**
- * 
-*/
-
-// var artInit = TovarItems.TovarArticul;
-// var nmInit = TovarItems.TovarName;
-var setName;
-//читаем файл с таблицей соответствия корпусов и артикулов
-tab_art = file_to_Mas(SalonUtils.GetFullPathAttachment('_simple_exemple.csv'));
-initialize_start_values(tab_art);
-
-// initialize new values 
-widthNew = Math.round(TovarItems.TovarModel.GSize.x);
-heightNew = Math.round(TovarItems.TovarModel.GSize.y);
-depthNew = Math.round(TovarItems.TovarModel.GSize.z);
-detailCntNew = getDetailCnt();
-holeCntNew = getHoleCnt();
-furnCntNew = getFurnCnt();
-
-// check sizes
-var widthIsEq = (widthInit == widthNew);
-var heightIsEq = (heightInit == heightNew);
-var depthIsEq = (depthInit == depthNew);
-setName = check_sizes (nmInit);
-
-// check params
-setName = check_params(setName);
-
-// set new name and art 
-TovarItems.TovarName = setName;
-TovarItems.TovarArticul = setName;
-
-/**
- * 
-*/
-function check_sizes(nmInit) {
-    var sizeNm;
-    // size not change
-    if (widthIsEq && heightIsEq && depthIsEq) {
-        return nmInit;
-    }
-
-    // set name 
-    if (!widthIsEq && heightIsEq && depthIsEq) {
-        sizeNm = widthNew + "_" + nmInit;
-        return sizeNm;
-    }
-
-    if ((widthIsEq && !heightIsEq && depthIsEq) ||
-        (!widthIsEq && !heightIsEq && depthIsEq)) {
-        sizeNm = widthInit + "x" + heightNew + "_" + nmInit;
-        return sizeNm;
-    }
-
-    if ((widthIsEq && heightIsEq && !depthIsEq) ||
-        (widthIsEq && !heightIsEq && !depthIsEq) ||
-        (!widthIsEq && !heightIsEq && !depthIsEq)) {
-        sizeNm = widthInit + "x" + heightNew + "x" + depthNew + "_" + nmInit;
-        return sizeNm;
-    }
-
-}
-function check_params(setName) {
-    
-}
-
-function initialize_start_values(tab_art){
-    var oneArt = tab_art[n][1];
-    if (oneArt === TovarItems.TovarArticul) {
-        artInit = Number(tab_art[n][1]);
-        widthInit = Number(tab_art[n][2]);
-        heightInit = Number(tab_art[n][3]);
-        depthInit = Number(tab_art[n][4]);
-        detailCntInit = Number(tab_art[n][5]);
-        holeCntInit = Number(tab_art[n][6]);
-        furnCntInit = Number(tab_art[n][7]);
-    }
+    let prs = stringProps.split("$");
+    // start name$x$y$x$all detail cont
+    startProps.nameInit = prs[0];
+    startProps.widthInit = prs[1];
+    startProps.heightInit = prs[2];
+    startProps.depthInit = prs[3];
+    startProps.cntInit = prs[4];
+    return startProps;
 }
 
 
-//преобразование файла в массив
-function file_to_Mas(fileName) {
-    //считали файл
-    var text = system.readTextFile(fileName);
-    // объект в массив из строк
-    var array = text.split('\r\n');
-    var str = [];
-    for (i = 0; i < array.length; ++i) {
-        //строка в набор ячеек с разделителем - ";"
-        str[i] = array[i].split(';');
+function getNewProps(bl){
+    let newProps = Object.create(null);
+
+    newProps.widthNew = Math.round(TovarItems.TovarModel.GSize.x).toFixed();
+    newProps.heightNew = Math.round(TovarItems.TovarModel.GSize.y).toFixed();
+    newProps.depthNew = Math.round(TovarItems.TovarModel.GSize.z).toFixed();
+    newProps.cntNew = getPanelAndFurnCount(bl);
+
+    return newProps;
+}
+
+function setName(startProps, newProps,startNm) {
+
+    // check sizes and cnt
+    let widthIsEq = (startProps.widthInit == newProps.widthNew);
+    let heightIsEq = (startProps.heightInit == newProps.heightNew);
+    let depthIsEq = (startProps.depthInit == newProps.depthNew);
+    let cntIsEq = (startProps.cntInit == newProps.cntNew);
+
+    let newPartName = checker();
+    //set new name
+    TovarItems.TovarName = newPartName + startNm;
+
+    function checker() {
+        let newStr = "$wx$hx$d_";
+        // size not change(trigger false start)
+        if (widthIsEq && heightIsEq && depthIsEq && cntIsEq) {
+            alert("нет изменений");
+            newStr = "";
+            return newStr;
+        }
+
+        if(!widthIsEq){newStr = newStr.replace("$w",newProps.widthNew);}
+        if(!heightIsEq){newStr = newStr.replace("$h",newProps.heightNew);}
+        if(!depthIsEq){newStr = newStr.replace("$d",newProps.depthNew);}
+
+        newStr = newStr.replace("$wx","");
+        newStr = newStr.replace("x$h","");
+        newStr = newStr.replace("x$d","");
+
+        if(!cntIsEq){newStr = "Д_" + newStr;}
+        //alert(newStr);
+        return newStr;
     }
-    return str;
 }
