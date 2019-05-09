@@ -6,6 +6,7 @@
 
 let bl = TovarItems.TovarModel;
 let startPropsName = "startValues";
+let changesPropNm = "changeParams";
 let isSetStartProp = bl.UserProperty[startPropsName];
 
 // set start props
@@ -27,7 +28,18 @@ else{
     startProps = getStartProps(bl,startPropsName);
     let newProps = Object.create(null);
     newProps = getNewProps(bl);
-    setName(startProps,newProps,startProps.nameInit);
+
+    // check sizes and cnt
+    let widthIsEq = (startProps.widthInit == newProps.widthNew);
+    let heightIsEq = (startProps.heightInit == newProps.heightNew);
+    let depthIsEq = (startProps.depthInit == newProps.depthNew);
+    let cntIsEq = (startProps.cntInit == newProps.cntNew);
+
+    setName(startProps,newProps);
+
+    if ( ! (widthIsEq && heightIsEq && depthIsEq && cntIsEq)) {
+        setChangesProps(bl,startProps,newProps,changesPropNm);
+    }
 }
 /**
  * 
@@ -100,7 +112,36 @@ function getNewProps(bl){
     return newProps;
 }
 
-function setName(startProps, newProps,startNm) {
+function setName(startProps,newProps) {
+    // check sizes and cnt
+    let widthIsEq = (startProps.widthInit == newProps.widthNew);
+    let heightIsEq = (startProps.heightInit == newProps.heightNew);
+    let depthIsEq = (startProps.depthInit == newProps.depthNew);
+    let cntIsEq = (startProps.cntInit == newProps.cntNew);
+
+    let newStr = "$wx$hx$d_";
+    // size not change(trigger false start)
+    if (widthIsEq && heightIsEq && depthIsEq && cntIsEq) {
+        alert("нет изменений");
+        newStr = "";
+    }
+
+    if (!widthIsEq) { newStr = newStr.replace("$w", newProps.widthNew); }
+    if (!heightIsEq) { newStr = newStr.replace("$h", newProps.heightNew); }
+    if (!depthIsEq) { newStr = newStr.replace("$d", newProps.depthNew); }
+
+    newStr = newStr.replace("$wx", "");
+    newStr = newStr.replace("x$h", "");
+    newStr = newStr.replace("x$d", "");
+
+    if (!cntIsEq) { newStr = "Д_" + newStr; }
+    //alert(newStr);
+
+    //set new name
+    TovarItems.TovarName = newStr + startProps.nameInit;
+}
+
+function setChangesProps(bl,startProps,newProps,changesPropNm) {
 
     // check sizes and cnt
     let widthIsEq = (startProps.widthInit == newProps.widthNew);
@@ -108,29 +149,17 @@ function setName(startProps, newProps,startNm) {
     let depthIsEq = (startProps.depthInit == newProps.depthNew);
     let cntIsEq = (startProps.cntInit == newProps.cntNew);
 
-    let newPartName = checker();
-    //set new name
-    TovarItems.TovarName = newPartName + startNm;
+    let isSetProp = bl.UserProperty[changesPropNm];
 
-    function checker() {
-        let newStr = "$wx$hx$d_";
-        // size not change(trigger false start)
-        if (widthIsEq && heightIsEq && depthIsEq && cntIsEq) {
-            alert("нет изменений");
-            newStr = "";
-            return newStr;
-        }
-
-        if(!widthIsEq){newStr = newStr.replace("$w",newProps.widthNew);}
-        if(!heightIsEq){newStr = newStr.replace("$h",newProps.heightNew);}
-        if(!depthIsEq){newStr = newStr.replace("$d",newProps.depthNew);}
-
-        newStr = newStr.replace("$wx","");
-        newStr = newStr.replace("x$h","");
-        newStr = newStr.replace("x$d","");
-
-        if(!cntIsEq){newStr = "Д_" + newStr;}
-        //alert(newStr);
-        return newStr;
+    if (isSetProp == undefined) {
+        bl.UserPropertyName = changesPropNm;
     }
+
+    let str = "";
+    if (!cntIsEq) { str = "$c" + str; }
+    if (!depthIsEq) { str = "$d" + str; }
+    if (!heightIsEq) { str = "$h" + str; }
+    if (!widthIsEq) { str = "$w" + str; }
+
+    bl.UserProperty[changesPropNm] = str;
 }
