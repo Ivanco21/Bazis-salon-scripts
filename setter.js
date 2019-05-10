@@ -122,13 +122,13 @@ function setName(startProps,newProps) {
     let newStr = "$wx$hx$d_";
     // size not change(trigger false start)
     if (widthIsEq && heightIsEq && depthIsEq && cntIsEq) {
-        alert("нет изменений");
+        //alert("нет изменений");
         newStr = "";
     }
 
-    if (!widthIsEq) { newStr = newStr.replace("$w", newProps.widthNew); }
-    if (!heightIsEq) { newStr = newStr.replace("$h", newProps.heightNew); }
-    if (!depthIsEq) { newStr = newStr.replace("$d", newProps.depthNew); }
+    if (!widthIsEq) { newStr = newStr.replace("$w", ("ш" + newProps.widthNew)); }
+    if (!heightIsEq) { newStr = newStr.replace("$h", ("в" + newProps.heightNew)); }
+    if (!depthIsEq) { newStr = newStr.replace("$d", ("г" + newProps.depthNew)); }
 
     newStr = newStr.replace("$wx", "");
     newStr = newStr.replace("x$h", "");
@@ -156,7 +156,7 @@ function setChangesProps(bl,startProps,newProps,changesPropNm) {
     }
 
     let str = "";
-    if (!cntIsEq) { str = "$c" + str; }
+    if (!cntIsEq) { str = "$c" + str; }//detail count
     if (!depthIsEq) { str = "$d" + str; }
     if (!heightIsEq) { str = "$h" + str; }
     if (!widthIsEq) { str = "$w" + str; }
