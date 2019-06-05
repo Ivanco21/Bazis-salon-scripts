@@ -3,29 +3,26 @@
  * Set Tovar values to name after change.
  * Start values write to UserProperty
  */
-
 let bl = TovarItems.TovarModel;
-let startPropsName = "startValues";
 let changesPropNm = "changeParams";
-let isSetStartProp = bl.UserProperty[startPropsName];
 
+alert("1" + TovarItems.Remark);
 // set start props
-if (isSetStartProp ==  undefined) {
-    bl.UserPropertyName = startPropsName;
+if (TovarItems.Remark == "") {
     let panelAndFurnCounter = getPanelAndFurnCount();
     // start name$x$y$x$all detail cont
-    bl.UserProperty[startPropsName] =
+    TovarItems.Remark =
         TovarItems.TovarName + "$" +
         Math.round(TovarItems.TovarModel.GSize.x).toFixed() + "$" +
         Math.round(TovarItems.TovarModel.GSize.y).toFixed() + "$" +
         Math.round(TovarItems.TovarModel.GSize.z).toFixed() + "$" +
         panelAndFurnCounter;
-    //alert(bl.UserProperty[startPropsName]);
+    alert("2" + TovarItems.Remark);
 }
 //check props and set name
 else{
     let startProps = Object.create(null);
-    startProps = getStartProps(bl,startPropsName);
+    startProps = getStartProps();
     let newProps = Object.create(null);
     newProps = getNewProps(bl);
 
@@ -40,7 +37,9 @@ else{
     if ( ! (widthIsEq && heightIsEq && depthIsEq && cntIsEq)) {
         setChangesProps(bl,startProps,newProps,changesPropNm);
     }
+    alert("3" + TovarItems.Remark);
 }
+
 /**
  * 
  * 
@@ -86,9 +85,9 @@ function getAllPanelAndFurnFromObjectsTopLvl(objectsTopLvl) {
 }
 
 
-function getStartProps (bl,startPropsName){
+function getStartProps (){
     let startProps = Object.create(null);
-    let stringProps = bl.UserProperty[startPropsName];
+    let stringProps = TovarItems.Remark;
 
     let prs = stringProps.split("$");
     // start name$x$y$x$all detail cont
@@ -122,7 +121,7 @@ function setName(startProps,newProps) {
     let newStr = "$wx$hx$d_";
     // size not change(trigger false start)
     if (widthIsEq && heightIsEq && depthIsEq && cntIsEq) {
-        //alert("нет изменений");
+        alert("нет изменений");
         newStr = "";
     }
 
@@ -135,7 +134,7 @@ function setName(startProps,newProps) {
     newStr = newStr.replace("x$d", "");
 
     if (!cntIsEq) { newStr = "Д_" + newStr; }
-    //alert(newStr);
+    alert(newStr);
 
     //set new name
     TovarItems.TovarName = newStr + startProps.nameInit;
@@ -149,10 +148,10 @@ function setChangesProps(bl,startProps,newProps,changesPropNm) {
     let depthIsEq = (startProps.depthInit == newProps.depthNew);
     let cntIsEq = (startProps.cntInit == newProps.cntNew);
 
-    let isSetProp = bl.UserProperty[changesPropNm];
+    let isSetProp = TovarItems.Remark;
 
-    if (isSetProp == undefined) {
-        bl.UserPropertyName = changesPropNm;
+    if (isSetProp == undefined ) {
+        TovarItems.Remark = changesPropNm;
     }
 
     let str = "";
@@ -161,5 +160,5 @@ function setChangesProps(bl,startProps,newProps,changesPropNm) {
     if (!heightIsEq) { str = "$h" + str; }
     if (!widthIsEq) { str = "$w" + str; }
 
-    bl.UserProperty[changesPropNm] = str;
+    TovarItems.Remark = str;
 }
