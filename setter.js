@@ -6,7 +6,7 @@
 let bl = TovarItems.TovarModel;
 let changesPropNm = "changeParams";
 
-alert("1" + TovarItems.Remark);
+//alert("1" + TovarItems.Remark);
 // set start props
 if (TovarItems.Remark == "") {
     let panelAndFurnCounter = getPanelAndFurnCount();
@@ -17,7 +17,7 @@ if (TovarItems.Remark == "") {
         Math.round(TovarItems.TovarModel.GSize.y).toFixed() + "$" +
         Math.round(TovarItems.TovarModel.GSize.z).toFixed() + "$" +
         panelAndFurnCounter;
-    alert("2" + TovarItems.Remark);
+    //alert("2" + TovarItems.Remark);
 }
 //check props and set name
 else{
@@ -37,7 +37,7 @@ else{
     if ( ! (widthIsEq && heightIsEq && depthIsEq && cntIsEq)) {
         setChangesProps(bl,startProps,newProps,changesPropNm);
     }
-    alert("3" + TovarItems.Remark);
+    //alert("3" + TovarItems.Remark);
 }
 
 /**
@@ -118,7 +118,7 @@ function setName(startProps,newProps) {
     let depthIsEq = (startProps.depthInit == newProps.depthNew);
     let cntIsEq = (startProps.cntInit == newProps.cntNew);
 
-    let newStr = "$wx$hx$d_";
+    let newStr = "$w$h$d_";
     // size not change(trigger false start)
     if (widthIsEq && heightIsEq && depthIsEq && cntIsEq) {
         alert("нет изменений");
@@ -129,12 +129,12 @@ function setName(startProps,newProps) {
     if (!heightIsEq) { newStr = newStr.replace("$h", ("в" + newProps.heightNew)); }
     if (!depthIsEq) { newStr = newStr.replace("$d", ("г" + newProps.depthNew)); }
 
-    newStr = newStr.replace("$wx", "");
-    newStr = newStr.replace("x$h", "");
-    newStr = newStr.replace("x$d", "");
+    newStr = newStr.replace("$w", "");
+    newStr = newStr.replace("$h", "");
+    newStr = newStr.replace("$d", "");
 
     if (!cntIsEq) { newStr = "Д_" + newStr; }
-    alert(newStr);
+    //alert(newStr);
 
     //set new name
     TovarItems.TovarName = newStr + startProps.nameInit;
@@ -148,17 +148,23 @@ function setChangesProps(bl,startProps,newProps,changesPropNm) {
     let depthIsEq = (startProps.depthInit == newProps.depthNew);
     let cntIsEq = (startProps.cntInit == newProps.cntNew);
 
-    let isSetProp = TovarItems.Remark;
-
-    if (isSetProp == undefined ) {
-        TovarItems.Remark = changesPropNm;
-    }
-
     let str = "";
     if (!cntIsEq) { str = "$c" + str; }//detail count
     if (!depthIsEq) { str = "$d" + str; }
     if (!heightIsEq) { str = "$h" + str; }
     if (!widthIsEq) { str = "$w" + str; }
 
-    TovarItems.Remark = str;
+    let startValue = TovarItems.Remark;
+    let r = startValue.indexOf("$#_");
+    let initVal;
+
+    if (r != -1 ) { 
+        let vl = startValue.split("$#_");
+        initVal = vl[0];
+    }
+    else{
+        initVal = startValue;
+    }
+
+    TovarItems.Remark = initVal + "$#_" + str;
 }
