@@ -119,7 +119,7 @@ function setName(startProps,newProps) {
     let depthIsEq = (startProps.depthInit == newProps.depthNew);
     let cntIsEq = (startProps.cntInit == newProps.cntNew);
 
-    let newStr = "$wx$hx$d_";
+    let newStr = "$w$h$d_";
     // size not change(trigger false start)
     if (widthIsEq && heightIsEq && depthIsEq && cntIsEq) {
         //alert("нет изменений");
@@ -130,9 +130,9 @@ function setName(startProps,newProps) {
     if (!heightIsEq) { newStr = newStr.replace("$h", ("в" + newProps.heightNew)); }
     if (!depthIsEq) { newStr = newStr.replace("$d", ("г" + newProps.depthNew)); }
 
-    newStr = newStr.replace("$wx", "");
-    newStr = newStr.replace("x$h", "");
-    newStr = newStr.replace("x$d", "");
+    newStr = newStr.replace("$w", "");
+    newStr = newStr.replace("$h", "");
+    newStr = newStr.replace("$d", "");
 
     if (!cntIsEq) { newStr = "Д_" + newStr; }
     //alert(newStr);
@@ -149,17 +149,24 @@ function setChangesProps(bl,startProps,newProps,changesPropNm) {
     let depthIsEq = (startProps.depthInit == newProps.depthNew);
     let cntIsEq = (startProps.cntInit == newProps.cntNew);
 
-    let isSetProp = bl.UserProperty[changesPropNm];
-
-    if (isSetProp == undefined) {
-        bl.UserPropertyName = changesPropNm;
-    }
-
     let str = "";
     if (!cntIsEq) { str = "$c" + str; }//detail count
     if (!depthIsEq) { str = "$d" + str; }
     if (!heightIsEq) { str = "$h" + str; }
     if (!widthIsEq) { str = "$w" + str; }
 
-    bl.UserProperty[changesPropNm] = str;
+    let startValue = bl.UserProperty[changesPropNm];
+
+    let r = startValue.indexOf("$#_");
+    let initVal;
+
+    if (r != -1 ) { 
+        let vl = startValue.split("$#_");
+        initVal = vl[0];
+    }
+    else{
+        initVal = startValue;
+    }
+    
+    bl.UserProperty[changesPropNm] = initVal + "$#_" + str;
 }
