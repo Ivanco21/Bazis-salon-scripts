@@ -156,17 +156,21 @@ function setChangesProps(bl,startProps,newProps,changesPropNm) {
     if (!widthIsEq) { str = "$w" + str; }
 
     let startValue = bl.UserProperty[changesPropNm];
+    let initVal = "";
 
-    let r = startValue.indexOf("$#_");
-    let initVal;
-
-    if (r != -1 ) { 
-        let vl = startValue.split("$#_");
-        initVal = vl[0];
+    if (startValue == undefined) {
+        bl.UserPropertyName = changesPropNm;
     }
     else{
-        initVal = startValue;
+        let r = startValue.indexOf("$#_");
+        if (r != -1 ) { 
+            let vl = startValue.split("$#_");
+            initVal = vl[0];
+        }
+        else{
+            initVal = startValue;
+        }
     }
-    
+
     bl.UserProperty[changesPropNm] = initVal + "$#_" + str;
 }
